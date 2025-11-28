@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigMoney Trading Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 0;
+        }
+        
+        .logo {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .tagline {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .bot-stats {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        .stat-label {
+            font-weight: bold;
+            color: #ffd700;
+        }
+        
+        .stat-value {
+            margin-left: auto;
+            font-weight: bold;
+        }
+        
+        .profit {
+            color: #4CAF50;
+        }
+        
+        .control-panel {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #ff6b6b, #ffd700);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .chart-container {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            opacity: 0.7;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">💰 BigMoney</div>
+            <div class="tagline">Advanced Trading Bot - Maximize Your Profits</div>
+        </header>
+        
+        <div class="main-content">
+            <div class="bot-stats">
+                <h2>📊 Bot Statistics</h2>
+                <div class="stat-item">
+                    <span class="stat-label">Current Profit:</span>
+                    <span class="stat-value profit">+$2,847.50</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Total Trades:</span>
+                    <span class="stat-value">1,247</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Success Rate:</span>
+                    <span class="stat-value profit">94.7%</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Active Since:</span>
+                    <span class="stat-value">30 days</span>
+                </div>
+            </div>
+            
+            <div class="control-panel">
+                <h2>🎮 Control Panel</h2>
+                <button class="btn" onclick="startBot()">🚀 Start Bot</button>
+                <button class="btn" onclick="stopBot()">⏹️ Stop Bot</button>
+                <button class="btn" onclick="optimizeStrategy()">⚡ Optimize</button>
+                <button class="btn" onclick="showSettings()">⚙️ Settings</button>
+            </div>
+            
+            <div class="chart-container">
+                <h2>📈 Performance Chart</h2>
+                <div id="chart" style="height: 300px; background: rgba(255,255,255,0.05); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    <!-- سيتم إضافة الرسم البياني هنا -->
+                    <div style="text-align: center;">
+                        <div style="font-size: 3em;">📊</div>
+                        <div>Live Trading Chart</div>
+                        <div style="margin-top: 10px; font-size: 0.9em; opacity: 0.7;">Real-time profit visualization</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2024 BigMoney Trading Bot. All rights reserved.</p>
+            <p>Advanced Algorithmic Trading Solution</p>
+        </footer>
+    </div>
+
+    <script>
+        function startBot() {
+            alert('🚀 Bot Started! Trading session initiated.');
+            updateStatus('active');
+        }
+        
+        function stopBot() {
+            alert('⏹️ Bot Stopped! Trading session paused.');
+            updateStatus('inactive');
+        }
+        
+        function optimizeStrategy() {
+            alert('⚡ Strategy optimization in progress...');
+            // محاكاة عملية التحسين
+            setTimeout(() => {
+                alert('✅ Strategy optimized successfully!');
+            }, 2000);
+        }
+        
+        function showSettings() {
+            alert('⚙️ Opening settings panel...');
+        }
+        
+        function updateStatus(status) {
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(btn => {
+                if (status === 'active') {
+                    btn.style.opacity = '0.8';
+                } else {
+                    btn.style.opacity = '1';
+                }
+            });
+        }
+        
+        // محاكاة تحديث الإحصائيات
+        setInterval(() => {
+            const profitElement = document.querySelector('.profit');
+            const currentProfit = parseFloat(profitElement.textContent.replace('+$', '').replace(',', ''));
+            const randomChange = (Math.random() - 0.5) * 100;
+            const newProfit = currentProfit + randomChange;
+            profitElement.textContent = `+$${newProfit.toFixed(2)}`;
+        }, 5000);
+    </script>
+</body>
+</html>
