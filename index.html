@@ -439,7 +439,7 @@
                             </div>
                             <div class="signal-item">
                                 <div class="signal-label">TIMEFRAME</div>
-                                <div class="signal-value" id="signalTimeframe">1M</div>
+                                <div class="signal-value" id="signalTimeframe">1minute</div>
                             </div>
                             <div class="signal-item">
                                 <div class="signal-label">CONFIDENCE</div>
@@ -561,8 +561,8 @@
             const randomSignal = Math.random();
             const signalType = randomSignal < 0.6 ? 'BUY' : 'SELL';
             
-            // TIMEFRAME ثابت دائماً 1M
-            const timeframe = '1M';
+            // TIMEFRAME ثابت دائماً 1minute
+            const timeframe = '1minute';
             
             // توليد نسبة ثقة عشوائية بين 75% و 95%
             const confidence = Math.floor(Math.random() * 21) + 75; // 75-95%
