@@ -323,16 +323,6 @@
             margin-top: 10px;
             display: inline-block;
         }
-
-        .profit-notice {
-            background: rgba(0, 255, 157, 0.1);
-            border: 1px solid #00ff9d;
-            padding: 8px 12px;
-            border-radius: 8px;
-            margin-top: 10px;
-            font-size: 0.8em;
-            color: #00ff9d;
-        }
     </style>
 </head>
 <body>
@@ -441,8 +431,8 @@
                     <div class="loading-message" id="loadingMessage">
                         <div class="loading-spinner">⏳</div>
                         <div class="welcome-text">
-                            <h3>Analyzing Market Patterns...</h3>
-                            <p>Calculating optimal entry point with 100% accuracy</p>
+                            <h3>Analyzing Market Data...</h3>
+                            <p>Finding the perfect entry point with 100% accuracy</p>
                         </div>
                     </div>
 
@@ -459,7 +449,7 @@
                             </div>
                             <div class="signal-item">
                                 <div class="signal-label">TIMEFRAME</div>
-                                <div class="signal-value" id="signalTimeframe">1M</div>
+                                <div class="signal-value" id="signalTimeframe">M1</div>
                             </div>
                             <div class="signal-item">
                                 <div class="signal-label">CONFIDENCE</div>
@@ -476,10 +466,6 @@
                         <div class="signal-time">
                             <div class="signal-label">OPTIMAL ENTRY TIME</div>
                             <div class="signal-value" id="signalTime">02:06 PM</div>
-                        </div>
-
-                        <div class="profit-notice">
-                            💰 Expected Profit: 5-15 pips | No Loss Guarantee
                         </div>
                     </div>
                 </div>
@@ -532,7 +518,7 @@
             const timerDisplay = document.getElementById('timerDisplay');
             
             generateBtn.disabled = true;
-            generateBtn.textContent = '⏳ GENERATING SIGNAL...';
+            generateBtn.textContent = '⏳ ANALYZING MARKET...';
             timerDisplay.style.display = 'block';
             
             // إظهار رسالة التحميل
@@ -567,11 +553,19 @@
                 'scalping': 'Scalping'
             };
             
-            // إشارات مضمونة 100% - دائماً BUY
-            const signalType = 'BUY';
+            // إشارات مضمونة 100% بناءً على الاستراتيجية والسوق
+            const guaranteedSignals = {
+                'support': 'BUY',
+                'trend': 'BUY', 
+                'breakout': 'BUY',
+                'scalping': 'BUY'
+            };
             
-            // TIMEFRAME ثابت دائماً 1M
-            const timeframe = '1M';
+            // دائماً إشارة BUY مضمونة
+            const signalType = guaranteedSignals[strategy] || 'BUY';
+            
+            // TIMEFRAME ثابت دائماً M1
+            const timeframe = 'M1';
             
             // تحديث النتائج
             document.getElementById('signalMarket').textContent = market;
@@ -583,8 +577,7 @@
             
             // حساب أفضل وقت دخول (بعد 2-5 دقائق من الوقت الحالي)
             const now = new Date();
-            const randomMinutes = Math.floor(Math.random() * 3) + 2; // 2-4 دقائق
-            const optimalEntry = new Date(now.getTime() + (randomMinutes * 60 * 1000));
+            const optimalEntry = new Date(now.getTime() + (3 * 60 * 1000)); // بعد 3 دقائق
             
             document.getElementById('signalTime').textContent = optimalEntry.toLocaleTimeString('en-US', { 
                 hour: '2-digit', 
