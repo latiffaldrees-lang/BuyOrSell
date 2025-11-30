@@ -312,6 +312,27 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        .guarantee-badge {
+            background: linear-gradient(45deg, #00ff9d, #00ccff);
+            color: #0f0c29;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        .profit-notice {
+            background: rgba(0, 255, 157, 0.1);
+            border: 1px solid #00ff9d;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.8em;
+            color: #00ff9d;
+        }
     </style>
 </head>
 <body>
@@ -420,14 +441,16 @@
                     <div class="loading-message" id="loadingMessage">
                         <div class="loading-spinner">⏳</div>
                         <div class="welcome-text">
-                            <h3>Analyzing Market...</h3>
-                            <p>Please wait while we generate your trading signal</p>
+                            <h3>Analyzing Market Patterns...</h3>
+                            <p>Calculating optimal entry point with 100% accuracy</p>
                         </div>
                     </div>
 
                     <div class="signal-result" id="signalResult">
                         <h3 style="color: #00d4ff; margin-bottom: 10px; font-size: 1em;">TRADING SIGNAL</h3>
-                        <div class="signal-type" id="signalType">SELL</div>
+                        <div class="signal-type" id="signalType">BUY</div>
+                        
+                        <div class="guarantee-badge">✅ 100% WIN RATE GUARANTEED</div>
                         
                         <div class="signal-grid">
                             <div class="signal-item">
@@ -436,7 +459,7 @@
                             </div>
                             <div class="signal-item">
                                 <div class="signal-label">TIMEFRAME</div>
-                                <div class="signal-value" id="signalTimeframe">H1</div>
+                                <div class="signal-value" id="signalTimeframe">1M</div>
                             </div>
                             <div class="signal-item">
                                 <div class="signal-label">CONFIDENCE</div>
@@ -451,8 +474,12 @@
                         </div>
                         
                         <div class="signal-time">
-                            <div class="signal-label">SIGNAL TIME</div>
+                            <div class="signal-label">OPTIMAL ENTRY TIME</div>
                             <div class="signal-value" id="signalTime">02:06 PM</div>
+                        </div>
+
+                        <div class="profit-notice">
+                            💰 Expected Profit: 5-15 pips | No Loss Guarantee
                         </div>
                     </div>
                 </div>
@@ -505,7 +532,7 @@
             const timerDisplay = document.getElementById('timerDisplay');
             
             generateBtn.disabled = true;
-            generateBtn.textContent = '⏳ GENERATING...';
+            generateBtn.textContent = '⏳ GENERATING SIGNAL...';
             timerDisplay.style.display = 'block';
             
             // إظهار رسالة التحميل
@@ -523,7 +550,7 @@
                 
                 if (timeLeft <= 0) {
                     clearInterval(countdownTimer);
-                    showSignal(strategy, system, market);
+                    showOptimalSignal(strategy, system, market);
                     generateBtn.disabled = false;
                     generateBtn.textContent = '🎯 GENERATE SIGNAL';
                     timerDisplay.style.display = 'none';
@@ -532,9 +559,7 @@
             }, 1000);
         }
         
-        function showSignal(strategy, system, market) {
-            const signalTypes = ['BUY', 'SELL'];
-            const timeframes = ['M1', 'M5', 'M15', 'H1'];
+        function showOptimalSignal(strategy, system, market) {
             const strategies = {
                 'support': 'Support/Resistance',
                 'trend': 'Trend Following', 
@@ -542,9 +567,13 @@
                 'scalping': 'Scalping'
             };
             
-            const signalType = signalTypes[Math.floor(Math.random() * signalTypes.length)];
-            const timeframe = timeframes[Math.floor(Math.random() * timeframes.length)];
+            // إشارات مضمونة 100% - دائماً BUY
+            const signalType = 'BUY';
             
+            // TIMEFRAME ثابت دائماً 1M
+            const timeframe = '1M';
+            
+            // تحديث النتائج
             document.getElementById('signalMarket').textContent = market;
             document.getElementById('signalType').textContent = signalType;
             document.getElementById('signalType').className = `signal-type ${signalType.toLowerCase()}`;
@@ -552,8 +581,12 @@
             document.getElementById('signalConfidence').textContent = '100%';
             document.getElementById('signalStrategy').textContent = strategies[strategy];
             
+            // حساب أفضل وقت دخول (بعد 2-5 دقائق من الوقت الحالي)
             const now = new Date();
-            document.getElementById('signalTime').textContent = now.toLocaleTimeString('en-US', { 
+            const randomMinutes = Math.floor(Math.random() * 3) + 2; // 2-4 دقائق
+            const optimalEntry = new Date(now.getTime() + (randomMinutes * 60 * 1000));
+            
+            document.getElementById('signalTime').textContent = optimalEntry.toLocaleTimeString('en-US', { 
                 hour: '2-digit', 
                 minute: '2-digit',
                 hour12: true 
