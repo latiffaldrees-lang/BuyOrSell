@@ -181,6 +181,21 @@
             font-weight: bold;
             cursor: pointer;
             margin-top: 8px;
+            transition: all 0.3s;
+        }
+        
+        .generate-btn:disabled {
+            background: rgba(255, 255, 255, 0.2);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .timer-display {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #ffd700;
+            display: none;
         }
         
         /* اللوحة اليمنى - النتائج */
@@ -189,14 +204,17 @@
             padding: 18px;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            height: fit-content;
-            min-height: 220px;
+            height: 340px; /* ارتفاع ثابت */
+            display: flex;
+            flex-direction: column;
         }
         
         .signal-result {
             display: none;
             flex-direction: column;
             text-align: center;
+            flex: 1;
+            justify-content: center;
         }
         
         .signal-type {
@@ -234,7 +252,8 @@
         }
         
         .confidence {
-            color: #ffd700;
+            color: #00ff9d;
+            font-weight: bold;
         }
         
         .signal-time {
@@ -253,7 +272,7 @@
             text-align: center;
             color: #a0a0c0;
             height: 100%;
-            min-height: 180px;
+            flex: 1;
         }
         
         .welcome-icon {
@@ -270,6 +289,28 @@
         .welcome-text p {
             font-size: 0.8em;
             line-height: 1.3;
+        }
+
+        .loading-message {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #a0a0c0;
+            height: 100%;
+            flex: 1;
+        }
+
+        .loading-spinner {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -294,7 +335,6 @@
                     <div class="logo">AI Trading Signals</div>
                     <div class="tagline">Advanced Algorithmic Trading Platform</div>
                 </div>
-                <!-- تم إزالة مربع المستخدم -->
             </div>
 
             <!-- المحتوى الرئيسي -->
@@ -359,9 +399,12 @@
                         </select>
                     </div>
 
-                    <button class="generate-btn" onclick="generateSignal()">
+                    <button class="generate-btn" id="generateBtn" onclick="generateSignal()">
                         🎯 GENERATE SIGNAL
                     </button>
+                    <div class="timer-display" id="timerDisplay">
+                        Next signal available in: <span id="timer">60</span>s
+                    </div>
                 </div>
 
                 <!-- اللوحة اليمنى - النتائج -->
@@ -371,6 +414,14 @@
                         <div class="welcome-text">
                             <h3>Welcome</h3>
                             <p>Select strategy, system, and market to generate trading signals.</p>
+                        </div>
+                    </div>
+
+                    <div class="loading-message" id="loadingMessage">
+                        <div class="loading-spinner">⏳</div>
+                        <div class="welcome-text">
+                            <h3>Analyzing Market...</h3>
+                            <p>Please wait while we generate your trading signal</p>
                         </div>
                     </div>
 
@@ -385,12 +436,12 @@
                             </div>
                             <div class="signal-item">
                                 <div class="signal-label">TIMEFRAME</div>
-                                <div class="signal-value" id="signalTimeframe">M1</div>
+                                <div class="signal-value" id="signalTimeframe">H1</div>
                             </div>
                             <div class="signal-item">
                                 <div class="signal-label">CONFIDENCE</div>
                                 <div class="signal-value">
-                                    <span id="signalConfidence" class="confidence">84%</span>
+                                    <span id="signalConfidence" class="confidence">100%</span>
                                 </div>
                             </div>
                             <div class="signal-item">
@@ -401,7 +452,7 @@
                         
                         <div class="signal-time">
                             <div class="signal-label">SIGNAL TIME</div>
-                            <div class="signal-value" id="signalTime">07:12 PM</div>
+                            <div class="signal-value" id="signalTime">02:06 PM</div>
                         </div>
                     </div>
                 </div>
@@ -411,6 +462,8 @@
 
     <script>
         const CORRECT_PASSWORD = "PassBigMoney";
+        let isGenerating = false;
+        let countdownTimer;
         
         function checkPassword() {
             const passwordInput = document.getElementById('passwordInput');
@@ -435,6 +488,8 @@
         }
         
         function generateSignal() {
+            if (isGenerating) return;
+            
             const strategy = document.getElementById('strategy').value;
             const system = document.getElementById('system').value;
             const market = document.getElementById('market').value;
@@ -444,6 +499,40 @@
                 return;
             }
             
+            // تعطيل الزر وبدء التايمر
+            isGenerating = true;
+            const generateBtn = document.getElementById('generateBtn');
+            const timerDisplay = document.getElementById('timerDisplay');
+            
+            generateBtn.disabled = true;
+            generateBtn.textContent = '⏳ GENERATING...';
+            timerDisplay.style.display = 'block';
+            
+            // إظهار رسالة التحميل
+            document.getElementById('welcomeMessage').style.display = 'none';
+            document.getElementById('loadingMessage').style.display = 'flex';
+            document.getElementById('signalResult').style.display = 'none';
+            
+            // بدء العد التنازلي (60 ثانية)
+            let timeLeft = 60;
+            const timerElement = document.getElementById('timer');
+            
+            countdownTimer = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(countdownTimer);
+                    showSignal(strategy, system, market);
+                    generateBtn.disabled = false;
+                    generateBtn.textContent = '🎯 GENERATE SIGNAL';
+                    timerDisplay.style.display = 'none';
+                    isGenerating = false;
+                }
+            }, 1000);
+        }
+        
+        function showSignal(strategy, system, market) {
             const signalTypes = ['BUY', 'SELL'];
             const timeframes = ['M1', 'M5', 'M15', 'H1'];
             const strategies = {
@@ -455,13 +544,12 @@
             
             const signalType = signalTypes[Math.floor(Math.random() * signalTypes.length)];
             const timeframe = timeframes[Math.floor(Math.random() * timeframes.length)];
-            const confidence = Math.floor(Math.random() * 25) + 75;
             
             document.getElementById('signalMarket').textContent = market;
             document.getElementById('signalType').textContent = signalType;
             document.getElementById('signalType').className = `signal-type ${signalType.toLowerCase()}`;
             document.getElementById('signalTimeframe').textContent = timeframe;
-            document.getElementById('signalConfidence').textContent = confidence + '%';
+            document.getElementById('signalConfidence').textContent = '100%';
             document.getElementById('signalStrategy').textContent = strategies[strategy];
             
             const now = new Date();
@@ -471,8 +559,9 @@
                 hour12: true 
             });
             
+            // إخفاء رسالة التحميل وإظهار النتيجة
+            document.getElementById('loadingMessage').style.display = 'none';
             document.getElementById('signalResult').style.display = 'flex';
-            document.getElementById('welcomeMessage').style.display = 'none';
         }
         
         document.getElementById('passwordInput').focus();
