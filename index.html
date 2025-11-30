@@ -129,7 +129,7 @@
             gap: 15px;
             flex: 1;
             min-height: 0;
-            align-items: start;
+            align-items: stretch; /* تغيير من start إلى stretch */
         }
         
         /* اللوحة اليسرى */
@@ -137,7 +137,7 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            height: fit-content;
+            height: 100%; /* جعل الارتفاع 100% */
         }
         
         .panel-section {
@@ -145,6 +145,7 @@
             padding: 18px;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            flex: 1; /* جعل العناصر تأخذ مساحة متساوية */
         }
         
         .section-title {
@@ -204,7 +205,7 @@
             padding: 18px;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            height: 340px; /* ارتفاع ثابت */
+            height: 100%; /* جعل الارتفاع 100% */
             display: flex;
             flex-direction: column;
         }
@@ -252,9 +253,12 @@
         }
         
         .confidence {
-            color: #00ff9d;
             font-weight: bold;
         }
+        
+        .confidence.high { color: #00ff9d; }
+        .confidence.medium { color: #ffd700; }
+        .confidence.low { color: #ff6b9d; }
         
         .signal-time {
             margin-top: 12px;
@@ -441,7 +445,7 @@
                             <div class="signal-item">
                                 <div class="signal-label">CONFIDENCE</div>
                                 <div class="signal-value">
-                                    <span id="signalConfidence" class="confidence">100%</span>
+                                    <span id="signalConfidence" class="confidence">85%</span>
                                 </div>
                             </div>
                             <div class="signal-item">
@@ -554,18 +558,33 @@
                 'scalping': 'Scalping'
             };
             
-            // إشارات مضمونة 100% - دائماً BUY
-            const signalType = 'BUY';
+            // توليد إشارة عشوائية (60% BUY, 40% SELL)
+            const randomSignal = Math.random();
+            const signalType = randomSignal < 0.6 ? 'BUY' : 'SELL';
             
             // TIMEFRAME ثابت دائماً 1M
             const timeframe = '1M';
+            
+            // توليد نسبة ثقة عشوائية بين 75% و 95%
+            const confidence = Math.floor(Math.random() * 21) + 75; // 75-95%
+            const confidenceElement = document.getElementById('signalConfidence');
             
             // تحديث النتائج
             document.getElementById('signalMarket').textContent = market;
             document.getElementById('signalType').textContent = signalType;
             document.getElementById('signalType').className = `signal-type ${signalType.toLowerCase()}`;
             document.getElementById('signalTimeframe').textContent = timeframe;
-            document.getElementById('signalConfidence').textContent = '100%';
+            confidenceElement.textContent = confidence + '%';
+            
+            // إضافة لون حسب مستوى الثقة
+            if (confidence >= 90) {
+                confidenceElement.className = 'confidence high';
+            } else if (confidence >= 80) {
+                confidenceElement.className = 'confidence medium';
+            } else {
+                confidenceElement.className = 'confidence low';
+            }
+            
             document.getElementById('signalStrategy').textContent = strategies[strategy];
             
             // حساب أفضل وقت دخول (بعد 2-5 دقائق من الوقت الحالي)
