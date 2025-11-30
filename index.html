@@ -491,6 +491,7 @@
         const CORRECT_PASSWORD = "PassBigMoney";
         let isGenerating = false;
         let countdownTimer;
+        let firstTime = true; // متغير لتتبع إذا كانت المرة الأولى
         
         function checkPassword() {
             const passwordInput = document.getElementById('passwordInput');
@@ -526,37 +527,50 @@
                 return;
             }
             
-            // تعطيل الزر وبدء التايمر
+            // تعطيل الزر
             isGenerating = true;
             const generateBtn = document.getElementById('generateBtn');
             const timerDisplay = document.getElementById('timerDisplay');
             
             generateBtn.disabled = true;
             generateBtn.textContent = '⏳ GENERATING SIGNAL...';
-            timerDisplay.style.display = 'block';
             
             // إظهار رسالة التحميل
             document.getElementById('welcomeMessage').style.display = 'none';
             document.getElementById('loadingMessage').style.display = 'flex';
             document.getElementById('signalResult').style.display = 'none';
             
-            // بدء العد التنازلي (60 ثانية)
-            let timeLeft = 60;
-            const timerElement = document.getElementById('timer');
-            
-            countdownTimer = setInterval(() => {
-                timeLeft--;
-                timerElement.textContent = timeLeft;
-                
-                if (timeLeft <= 0) {
-                    clearInterval(countdownTimer);
+            if (firstTime) {
+                // أول مرة - عرض النتيجة فوراً
+                setTimeout(() => {
                     showOptimalSignal(strategy, system, market);
                     generateBtn.disabled = false;
                     generateBtn.textContent = '🎯 GENERATE SIGNAL';
-                    timerDisplay.style.display = 'none';
                     isGenerating = false;
-                }
-            }, 1000);
+                    firstTime = false; // تغيير الحالة لتصبح ليست أول مرة
+                }, 1500); // تأخير بسيط لمحاكاة التحميل
+            } else {
+                // من ثاني مرة - عرض العد التنازلي 60 ثانية
+                timerDisplay.style.display = 'block';
+                
+                // بدء العد التنازلي (60 ثانية)
+                let timeLeft = 60;
+                const timerElement = document.getElementById('timer');
+                
+                countdownTimer = setInterval(() => {
+                    timeLeft--;
+                    timerElement.textContent = timeLeft;
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(countdownTimer);
+                        showOptimalSignal(strategy, system, market);
+                        generateBtn.disabled = false;
+                        generateBtn.textContent = '🎯 GENERATE SIGNAL';
+                        timerDisplay.style.display = 'none';
+                        isGenerating = false;
+                    }
+                }, 1000);
+            }
         }
         
         function showOptimalSignal(strategy, system, market) {
