@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trading Signals Bot</title>
+    <title>AI Trading Signals</title>
     <style>
         * {
             margin: 0;
@@ -13,232 +13,549 @@
         }
         
         body {
-            background: linear-gradient(135deg, #0f1b3a 0%, #1a3a6d 100%);
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
             color: white;
             min-height: 100vh;
-            padding: 20px;
+            overflow: hidden;
         }
         
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 30px;
-            backdrop-filter: blur(10px);
+        /* صفحة كلمة المرور */
+        .password-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
         
-        header {
+        .password-box {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 50px;
+            border-radius: 20px;
             text-align: center;
-            margin-bottom: 30px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .password-logo {
+            font-size: 2.8em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00d4ff, #0099ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 18px;
+            margin: 25px 0;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 1.1em;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .password-input:focus {
+            outline: none;
+            border-color: #00d4ff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .password-input::placeholder {
+            color: #a0a0c0;
+        }
+        
+        .password-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #00d4ff, #0099ff);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px rgba(0, 212, 255, 0.3);
+        }
+        
+        .password-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 212, 255, 0.4);
+        }
+        
+        .error-message {
+            color: #ff6b9d;
+            margin-top: 15px;
+            font-weight: bold;
+            display: none;
+        }
+
+        /* الموقع الرئيسي */
+        .main-site {
+            display: none;
+            height: 100vh;
+            padding: 30px;
+        }
+        
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 100%;
+            display: grid;
+            grid-template-rows: auto 1fr;
+            gap: 25px;
+        }
+        
+        /* الهيدر */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
         
         .logo {
-            font-size: 2.5em;
+            font-size: 2.2em;
             font-weight: bold;
-            background: linear-gradient(45deg, #00ff88, #00ccff);
+            background: linear-gradient(45deg, #00d4ff, #0099ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
         }
         
         .tagline {
-            color: #ccc;
-            margin-bottom: 30px;
+            color: #a0a0c0;
+            font-size: 1.1em;
         }
         
-        .selection-panel {
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 12px 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* المحتوى الرئيسي */
+        .main-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 30px;
+            gap: 25px;
+            height: 100%;
+        }
+        
+        /* اللوحة اليسرى */
+        .control-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .panel-section {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 25px;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .section-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #00d4ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .select-group {
-            background: rgba(255, 255, 255, 0.08);
-            padding: 20px;
-            border-radius: 10px;
-        }
-        
-        .select-group h3 {
-            margin-bottom: 15px;
-            color: #00ff88;
-            font-size: 1.1em;
+            margin-bottom: 20px;
         }
         
         select {
             width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
             color: white;
             font-size: 1em;
+            transition: all 0.3s;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #00d4ff;
         }
         
         select option {
-            background: #1a3a6d;
+            background: #1a1a2e;
             color: white;
         }
         
         .markets-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 10px;
-            margin-bottom: 30px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .markets-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .markets-grid::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+        
+        .markets-grid::-webkit-scrollbar-thumb {
+            background: #00d4ff;
+            border-radius: 3px;
         }
         
         .market-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.15);
             color: white;
             padding: 15px 10px;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s;
             font-size: 0.9em;
+            text-align: center;
         }
         
         .market-btn:hover, .market-btn.active {
-            background: linear-gradient(45deg, #00ff88, #00ccff);
+            background: linear-gradient(45deg, #00d4ff, #0099ff);
+            border-color: transparent;
             transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 212, 255, 0.3);
         }
         
         .generate-btn {
             width: 100%;
-            background: linear-gradient(45deg, #ff6b6b, #ffd700);
+            background: linear-gradient(45deg, #00d4ff, #0099ff);
             color: white;
             border: none;
             padding: 20px;
-            border-radius: 12px;
+            border-radius: 15px;
             font-size: 1.3em;
             font-weight: bold;
             cursor: pointer;
-            margin: 20px 0;
-            transition: transform 0.3s;
+            transition: all 0.3s;
+            margin-top: 10px;
+            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
         }
         
         .generate-btn:hover {
             transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 212, 255, 0.4);
+        }
+        
+        /* اللوحة اليمنى - النتائج */
+        .results-panel {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
         }
         
         .signal-result {
-            background: rgba(255, 255, 255, 0.08);
-            padding: 30px;
-            border-radius: 12px;
-            text-align: center;
+            flex: 1;
             display: none;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .signal-header {
+            margin-bottom: 30px;
         }
         
         .signal-type {
-            font-size: 2.5em;
+            font-size: 3.5em;
             font-weight: bold;
             margin: 20px 0;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
         
-        .buy { color: #00ff88; }
-        .sell { color: #ff6b6b; }
+        .buy { 
+            color: #00ff9d;
+            background: linear-gradient(45deg, #00ff9d, #00ccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
         
-        .signal-details {
+        .sell { 
+            color: #ff6b9d;
+            background: linear-gradient(45deg, #ff6b9d, #ff8e6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .signal-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 20px;
+            margin-top: 30px;
         }
         
-        .detail-item {
+        .signal-item {
             background: rgba(255, 255, 255, 0.05);
-            padding: 15px;
-            border-radius: 8px;
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .signal-label {
+            color: #a0a0c0;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+        
+        .signal-value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: white;
         }
         
         .confidence {
             color: #ffd700;
             font-weight: bold;
         }
+        
+        .signal-time {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .welcome-message {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #a0a0c0;
+        }
+        
+        .welcome-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+        
+        .welcome-text {
+            font-size: 1.2em;
+            max-width: 400px;
+            line-height: 1.6;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">📊 Trading Signals</div>
-            <div class="tagline">Get AI-Powered Trading Signals in Real-Time</div>
-        </header>
-        
-        <div class="selection-panel">
-            <div class="select-group">
-                <h3>📈 Select Strategy</h3>
-                <select id="strategy">
-                    <option value="">-- Select Strategy --</option>
-                    <option value="support">Support/Resistance</option>
-                    <option value="trend">Trend Following</option>
-                    <option value="breakout">Breakout</option>
-                    <option value="scalping">Scalping</option>
-                </select>
-            </div>
-            
-            <div class="select-group">
-                <h3>🤖 Select System</h3>
-                <select id="system">
-                    <option value="">-- Select System --</option>
-                    <option value="smart">CB Smart Logic</option>
-                    <option value="momentum">Momentum Shift</option>
-                    <option value="sniper">Sniper Mode</option>
-                </select>
-            </div>
+    <!-- صفحة كلمة المرور -->
+    <div class="password-screen" id="passwordScreen">
+        <div class="password-box">
+            <div class="password-logo">🔐 AI Trading</div>
+            <h3 style="color: #a0a0c0; margin-bottom: 10px;">Secure Access Required</h3>
+            <p style="color: #8888aa; margin-bottom: 20px; font-size: 0.9em;">Enter password to access the trading platform</p>
+            <input type="password" class="password-input" id="passwordInput" placeholder="Enter Password" onkeypress="checkEnter(event)">
+            <button class="password-btn" onclick="checkPassword()">🚀 Access Platform</button>
+            <div class="error-message" id="errorMessage">❌ Incorrect password. Please try again.</div>
         </div>
-        
-        <div class="select-group">
-            <h3>💱 Real Markets</h3>
-            <div class="markets-grid" id="markets">
-                <!-- سيتم إضافة أزرار العملات هنا -->
-            </div>
-        </div>
-        
-        <button class="generate-btn" onclick="generateSignal()">🎯 Generate Signal</button>
-        
-        <div class="signal-result" id="signalResult">
-            <h3>📊 Trading Signal Generated</h3>
-            <div class="signal-details">
-                <div class="detail-item">
-                    <strong>Market:</strong><br>
-                    <span id="signalMarket">EUR/USD (OTC)</span>
+    </div>
+
+    <!-- الموقع الرئيسي -->
+    <div class="main-site" id="mainSite">
+        <div class="dashboard">
+            <!-- الهيدر -->
+            <div class="header">
+                <div class="logo-section">
+                    <div class="logo">🤖 AI Trading Signals</div>
+                    <div class="tagline">Advanced Algorithmic Trading Platform</div>
                 </div>
-                <div class="detail-item">
-                    <strong>Type:</strong><br>
-                    <span id="signalType" class="signal-type">SELL</span>
-                </div>
-                <div class="detail-item">
-                    <strong>Timeframe:</strong><br>
-                    <span id="signalTimeframe">M1</span>
-                </div>
-                <div class="detail-item">
-                    <strong>Confidence:</strong><br>
-                    <span id="signalConfidence" class="confidence">84%</span>
+                <div class="user-info">
+                    <div class="user-avatar">👤</div>
+                    <div>
+                        <div style="font-weight: bold;">BigMoney Trader</div>
+                        <div style="font-size: 0.8em; color: #a0a0c0;">Premium Account</div>
+                    </div>
                 </div>
             </div>
-            <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px;">
-                <strong>Signal Time:</strong> <span id="signalTime">07:12 PM</span>
+
+            <!-- المحتوى الرئيسي -->
+            <div class="main-content">
+                <!-- اللوحة اليسرى - التحكم -->
+                <div class="control-panel">
+                    <div class="panel-section">
+                        <div class="section-title">📈 Trading Strategy</div>
+                        <div class="select-group">
+                            <select id="strategy">
+                                <option value="">-- Select Strategy --</option>
+                                <option value="support">Support/Resistance</option>
+                                <option value="trend">Trend Following</option>
+                                <option value="breakout">Breakout</option>
+                                <option value="scalping">Scalping</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="panel-section">
+                        <div class="section-title">🤖 AI System</div>
+                        <div class="select-group">
+                            <select id="system">
+                                <option value="">-- Select System --</option>
+                                <option value="smart">CB Smart Logic</option>
+                                <option value="momentum">Momentum Shift</option>
+                                <option value="sniper">Sniper Mode</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="panel-section">
+                        <div class="section-title">💱 Market Selection</div>
+                        <div class="markets-grid" id="markets">
+                            <!-- سيتم إضافة أزرار العملات هنا -->
+                        </div>
+                    </div>
+
+                    <button class="generate-btn" onclick="generateSignal()">
+                        🎯 GENERATE TRADING SIGNAL
+                    </button>
+                </div>
+
+                <!-- اللوحة اليمنى - النتائج -->
+                <div class="results-panel">
+                    <div class="welcome-message" id="welcomeMessage">
+                        <div class="welcome-icon">📊</div>
+                        <div class="welcome-text">
+                            <h3>Welcome to AI Trading Signals</h3>
+                            <p>Select your trading strategy, AI system, and market to generate powerful trading signals in real-time.</p>
+                        </div>
+                    </div>
+
+                    <div class="signal-result" id="signalResult">
+                        <div class="signal-header">
+                            <h3>AI TRADING SIGNAL GENERATED</h3>
+                            <div class="signal-type" id="signalType">SELL</div>
+                        </div>
+                        
+                        <div class="signal-grid">
+                            <div class="signal-item">
+                                <div class="signal-label">MARKET</div>
+                                <div class="signal-value" id="signalMarket">EUR/USD (OTC)</div>
+                            </div>
+                            <div class="signal-item">
+                                <div class="signal-label">TIMEFRAME</div>
+                                <div class="signal-value" id="signalTimeframe">M1</div>
+                            </div>
+                            <div class="signal-item">
+                                <div class="signal-label">CONFIDENCE</div>
+                                <div class="signal-value">
+                                    <span id="signalConfidence" class="confidence">84%</span>
+                                </div>
+                            </div>
+                            <div class="signal-item">
+                                <div class="signal-label">STRATEGY</div>
+                                <div class="signal-value" id="signalStrategy">Support/Resistance</div>
+                            </div>
+                        </div>
+                        
+                        <div class="signal-time">
+                            <div class="signal-label">SIGNAL TIME</div>
+                            <div class="signal-value" id="signalTime">07:12:45 PM</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // قائمة العملات
-        const markets = [
-            'EUR/USD', 'GBP/USD', 'AUD/USD', 'USD/JPY', 'USD/CAD', 
-            'USD/CHF', 'EUR/JPY', 'GBP/JPY', 'NZD/USD', 'BTC/USD', 'ETH/USD'
-        ];
+        // كلمة المرور الصحيحة
+        const CORRECT_PASSWORD = "PassBigMoney";
         
-        // إنشاء أزرار العملات
-        const marketsContainer = document.getElementById('markets');
-        markets.forEach(market => {
-            const button = document.createElement('button');
-            button.className = 'market-btn';
-            button.textContent = market;
-            button.onclick = () => selectMarket(market, button);
-            marketsContainer.appendChild(button);
-        });
+        // التحقق من كلمة المرور
+        function checkPassword() {
+            const passwordInput = document.getElementById('passwordInput');
+            const errorMessage = document.getElementById('errorMessage');
+            const passwordScreen = document.getElementById('passwordScreen');
+            const mainSite = document.getElementById('mainSite');
+            
+            if (passwordInput.value === CORRECT_PASSWORD) {
+                // كلمة المرور صحيحة - إظهار الموقع
+                passwordScreen.style.display = 'none';
+                mainSite.style.display = 'block';
+                initializeTradingApp();
+            } else {
+                // كلمة المرور خاطئة
+                errorMessage.style.display = 'block';
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        }
+        
+        // الدخول بالزر Enter
+        function checkEnter(event) {
+            if (event.key === 'Enter') {
+                checkPassword();
+            }
+        }
+        
+        // تهيئة تطبيق التداول بعد الدخول
+        function initializeTradingApp() {
+            // قائمة العملات الكاملة
+            const markets = [
+                'EUR/USD', 'GBP/USD', 'AUD/USD', 'USD/JPY', 'USD/CAD', 
+                'USD/CHF', 'EUR/JPY', 'GBP/JPY', 'NZD/USD', 'BTC/USD', 
+                'ETH/USD', 'LTC/USD', 'XRP/USD', 'BCH/USD', 'AUD/JPY',
+                'AUD/NZD', 'EUR/AUD', 'EUR/GBP', 'AUD/CHF', 'Gold',
+                'Silver', 'Crude Oil', 'Brent Oil'
+            ];
+            
+            // إنشاء أزرار العملات
+            const marketsContainer = document.getElementById('markets');
+            markets.forEach(market => {
+                const button = document.createElement('button');
+                button.className = 'market-btn';
+                button.textContent = market;
+                button.onclick = () => selectMarket(market, button);
+                marketsContainer.appendChild(button);
+            });
+            
+            // تحديد أول عملة افتراضياً
+            document.querySelector('.market-btn').click();
+        }
         
         let selectedMarket = 'EUR/USD';
         
@@ -264,34 +581,42 @@
             // محاكاة توليد الإشارة
             const signalTypes = ['BUY', 'SELL'];
             const timeframes = ['M1', 'M5', 'M15', 'H1'];
+            const strategies = {
+                'support': 'Support/Resistance',
+                'trend': 'Trend Following', 
+                'breakout': 'Breakout',
+                'scalping': 'Scalping'
+            };
+            
             const signalType = signalTypes[Math.floor(Math.random() * signalTypes.length)];
             const timeframe = timeframes[Math.floor(Math.random() * timeframes.length)];
-            const confidence = Math.floor(Math.random() * 30) + 70; // 70-99%
+            const confidence = Math.floor(Math.random() * 25) + 75; // 75-99%
             
             // تحديث النتائج
-            document.getElementById('signalMarket').textContent = selectedMarket + ' (OTC)';
+            document.getElementById('signalMarket').textContent = selectedMarket + 
+                (selectedMarket.includes('Oil') || selectedMarket.includes('Gold') || selectedMarket.includes('Silver') ? '' : ' (OTC)');
             document.getElementById('signalType').textContent = signalType;
             document.getElementById('signalType').className = `signal-type ${signalType.toLowerCase()}`;
             document.getElementById('signalTimeframe').textContent = timeframe;
             document.getElementById('signalConfidence').textContent = confidence + '%';
+            document.getElementById('signalStrategy').textContent = strategies[strategy];
             
             // وقت حقيقي
             const now = new Date();
             document.getElementById('signalTime').textContent = now.toLocaleTimeString('en-US', { 
                 hour: '2-digit', 
                 minute: '2-digit',
+                second: '2-digit',
                 hour12: true 
             });
             
-            // إظهار النتيجة
-            document.getElementById('signalResult').style.display = 'block';
-            
-            // Scroll to result
-            document.getElementById('signalResult').scrollIntoView({ behavior: 'smooth' });
+            // إظهار النتيجة وإخفاء رسالة الترحيب
+            document.getElementById('signalResult').style.display = 'flex';
+            document.getElementById('welcomeMessage').style.display = 'none';
         }
         
-        // تحديد أول عملة افتراضياً
-        document.querySelector('.market-btn').click();
+        // تركيز على حقل كلمة المرور عند التحميل
+        document.getElementById('passwordInput').focus();
     </script>
 </body>
 </html>
