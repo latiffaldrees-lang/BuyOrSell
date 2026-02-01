@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BigMoney Trading Bot</title>
+    <title>AI Trading Signals</title>
     <style>
         * {
             margin: 0;
@@ -13,218 +13,601 @@
         }
         
         body {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
             color: white;
             min-height: 100vh;
+            overflow: hidden;
+            padding: 15px;
         }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+        /* صفحة كلمة المرور */
+        .password-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
         
-        header {
+        .password-box {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 35px;
+            border-radius: 15px;
             text-align: center;
-            padding: 40px 0;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            max-width: 380px;
+            width: 90%;
+        }
+        
+        .password-logo {
+            font-size: 2em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00d4ff, #0099ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 14px;
+            margin: 18px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 1em;
+            text-align: center;
+        }
+        
+        .password-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #00d4ff, #0099ff);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .error-message {
+            color: #ff6b9d;
+            margin-top: 10px;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        /* الموقع الرئيسي */
+        .main-site {
+            display: none;
+            height: 100vh;
+        }
+        
+        .dashboard {
+            max-width: 1000px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+        }
+        
+        /* الهيدر */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            margin-bottom: 15px;
         }
         
         .logo {
-            font-size: 3em;
+            font-size: 1.6em;
             font-weight: bold;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            background: linear-gradient(45deg, #00d4ff, #0099ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         
         .tagline {
-            font-size: 1.2em;
-            opacity: 0.9;
-            margin-bottom: 30px;
+            color: #a0a0c0;
+            font-size: 0.8em;
         }
         
+        /* المحتوى الرئيسي */
         .main-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-top: 40px;
+            gap: 15px;
+            flex: 1;
+            min-height: 0;
+            align-items: start;
         }
         
-        .bot-stats {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .stat-item {
-            display: flex;
-            justify-content: between;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-        }
-        
-        .stat-label {
-            font-weight: bold;
-            color: #ffd700;
-        }
-        
-        .stat-value {
-            margin-left: auto;
-            font-weight: bold;
-        }
-        
-        .profit {
-            color: #4CAF50;
-        }
-        
+        /* اللوحة اليسرى */
         .control-panel {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: fit-content;
         }
         
-        .btn {
-            background: linear-gradient(45deg, #ff6b6b, #ffd700);
+        .panel-section {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .section-title {
+            font-size: 1em;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #00d4ff;
+        }
+        
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 0.9em;
+        }
+        
+        select option {
+            background: #1a1a2e;
+            color: white;
+            padding: 10px;
+        }
+        
+        .generate-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #00d4ff, #0099ff);
             color: white;
             border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            font-size: 1.1em;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 1em;
             font-weight: bold;
             cursor: pointer;
-            margin: 10px;
-            transition: transform 0.3s;
+            margin-top: 8px;
+            transition: all 0.3s;
         }
         
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-        
-        .chart-container {
-            grid-column: 1 / -1;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 15px;
-            margin-top: 20px;
-            backdrop-filter: blur(10px);
-        }
-        
-        footer {
-            text-align: center;
-            margin-top: 50px;
-            padding: 20px;
+        .generate-btn:disabled {
+            background: rgba(255, 255, 255, 0.2);
+            cursor: not-allowed;
             opacity: 0.7;
         }
         
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
+        .timer-display {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #ffd700;
+            display: none;
+        }
+        
+        /* اللوحة اليمنى - النتائج */
+        .results-panel {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 340px; /* ارتفاع ثابت */
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .signal-result {
+            display: none;
+            flex-direction: column;
+            text-align: center;
+            flex: 1;
+            justify-content: center;
+        }
+        
+        .signal-type {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 12px 0;
+        }
+        
+        .buy { color: #00ff9d; }
+        .sell { color: #ff6b9d; }
+        
+        .signal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 18px;
+        }
+        
+        .signal-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+        
+        .signal-label {
+            color: #a0a0c0;
+            font-size: 0.8em;
+            margin-bottom: 5px;
+        }
+        
+        .signal-value {
+            font-size: 1em;
+            font-weight: bold;
+        }
+        
+        .confidence {
+            font-weight: bold;
+        }
+        
+        .confidence.high { color: #00ff9d; }
+        .confidence.medium { color: #ffd700; }
+        .confidence.low { color: #ff6b9d; }
+        
+        .signal-time {
+            margin-top: 12px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+        
+        .welcome-message {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #a0a0c0;
+            height: 100%;
+            flex: 1;
+        }
+        
+        .welcome-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+        
+        .welcome-text h3 {
+            margin-bottom: 8px;
+            color: #00d4ff;
+            font-size: 1.1em;
+        }
+        
+        .welcome-text p {
+            font-size: 0.8em;
+            line-height: 1.3;
+        }
+
+        .loading-message {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #a0a0c0;
+            height: 100%;
+            flex: 1;
+        }
+
+        .loading-spinner {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">💰 BigMoney</div>
-            <div class="tagline">Advanced Trading Bot - Maximize Your Profits</div>
-        </header>
-        
-        <div class="main-content">
-            <div class="bot-stats">
-                <h2>📊 Bot Statistics</h2>
-                <div class="stat-item">
-                    <span class="stat-label">Current Profit:</span>
-                    <span class="stat-value profit">+$2,847.50</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Total Trades:</span>
-                    <span class="stat-value">1,247</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Success Rate:</span>
-                    <span class="stat-value profit">94.7%</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Active Since:</span>
-                    <span class="stat-value">30 days</span>
+    <!-- صفحة كلمة المرور -->
+    <div class="password-screen" id="passwordScreen">
+        <div class="password-box">
+            <div class="password-logo">🔐 AI Trading</div>
+            <p style="color: #a0a0c0; margin-bottom: 15px; font-size: 0.9em;">Enter password to access</p>
+            <input type="password" class="password-input" id="passwordInput" placeholder="Enter Password" onkeypress="checkEnter(event)">
+            <button class="password-btn" onclick="checkPassword()">🚀 Access</button>
+            <div class="error-message" id="errorMessage">❌ Incorrect password</div>
+        </div>
+    </div>
+
+    <!-- الموقع الرئيسي -->
+    <div class="main-site" id="mainSite">
+        <div class="dashboard">
+            <!-- الهيدر -->
+            <div class="header">
+                <div>
+                    <div class="logo">AI Trading Signals</div>
+                    <div class="tagline">Advanced Algorithmic Trading Platform</div>
                 </div>
             </div>
-            
-            <div class="control-panel">
-                <h2>🎮 Control Panel</h2>
-                <button class="btn" onclick="startBot()">🚀 Start Bot</button>
-                <button class="btn" onclick="stopBot()">⏹️ Stop Bot</button>
-                <button class="btn" onclick="optimizeStrategy()">⚡ Optimize</button>
-                <button class="btn" onclick="showSettings()">⚙️ Settings</button>
-            </div>
-            
-            <div class="chart-container">
-                <h2>📈 Performance Chart</h2>
-                <div id="chart" style="height: 300px; background: rgba(255,255,255,0.05); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                    <!-- سيتم إضافة الرسم البياني هنا -->
-                    <div style="text-align: center;">
-                        <div style="font-size: 3em;">📊</div>
-                        <div>Live Trading Chart</div>
-                        <div style="margin-top: 10px; font-size: 0.9em; opacity: 0.7;">Real-time profit visualization</div>
+
+            <!-- المحتوى الرئيسي -->
+            <div class="main-content">
+                <!-- اللوحة اليسرى - التحكم -->
+                <div class="control-panel">
+                    <div class="panel-section">
+                        <div class="section-title">📈 Trading Strategy</div>
+                        <select id="strategy">
+                            <option value="">-- Select Strategy --</option>
+                            <option value="support">Support/Resistance</option>
+                            <option value="trend">Trend Following</option>
+                            <option value="breakout">Breakout</option>
+                            <option value="scalping">Scalping</option>
+                        </select>
+                    </div>
+
+                    <div class="panel-section">
+                        <div class="section-title">🤖 AI System</div>
+                        <select id="system">
+                            <option value="">-- Select System --</option>
+                            <option value="smart">CB Smart Logic</option>
+                            <option value="momentum">Momentum Shift</option>
+                            <option value="sniper">Sniper Mode</option>
+                        </select>
+                    </div>
+
+                    <div class="panel-section">
+                        <div class="section-title">💱 Market Selection</div>
+                        <select id="market">
+                            <option value="">-- Select Market --</option>
+                            <!-- العملات الرئيسية -->
+                            <option value="EUR/USD">EUR/USD (OTC)</option>
+                            <option value="GBP/USD">GBP/USD (OTC)</option>
+                            <option value="AUD/USD">AUD/USD (OTC)</option>
+                            <option value="USD/JPY">USD/JPY (OTC)</option>
+                            <option value="USD/CAD">USD/CAD (OTC)</option>
+                            <option value="USD/CHF">USD/CHF (OTC)</option>
+                            <option value="EUR/JPY">EUR/JPY (OTC)</option>
+                            <option value="GBP/JPY">GBP/JPY (OTC)</option>
+                            <option value="NZD/USD">NZD/USD (OTC)</option>
+                            
+                            <!-- العملات المشفرة -->
+                            <option value="BTC/USD">BTC/USD (OTC)</option>
+                            <option value="ETH/USD">ETH/USD (OTC)</option>
+                            <option value="LTC/USD">LTC/USD (OTC)</option>
+                            <option value="XRP/USD">XRP/USD (OTC)</option>
+                            <option value="BCH/USD">BCH/USD (OTC)</option>
+                            
+                            <!-- أزواج العملات الإضافية -->
+                            <option value="AUD/JPY">AUD/JPY (OTC)</option>
+                            <option value="AUD/NZD">AUD/NZD (OTC)</option>
+                            <option value="AUD/CHF">AUD/CHF (OTC)</option>
+                            <option value="EUR/AUD">EUR/AUD (OTC)</option>
+                            <option value="EUR/GBP">EUR/GBP (OTC)</option>
+                            
+                            <!-- السلع -->
+                            <option value="Gold">Gold</option>
+                            <option value="Silver">Silver</option>
+                            <option value="Crude Oil">Crude Oil</option>
+                            <option value="Brent Oil">Brent Oil</option>
+                        </select>
+                    </div>
+
+                    <button class="generate-btn" id="generateBtn" onclick="generateSignal()">
+                        🎯 GENERATE SIGNAL
+                    </button>
+                    <div class="timer-display" id="timerDisplay">
+                        Next signal available in: <span id="timer">60</span>s
+                    </div>
+                </div>
+
+                <!-- اللوحة اليمنى - النتائج -->
+                <div class="results-panel">
+                    <div class="welcome-message" id="welcomeMessage">
+                        <div class="welcome-icon">📊</div>
+                        <div class="welcome-text">
+                            <h3>Welcome</h3>
+                            <p>Select strategy, system, and market to generate trading signals.</p>
+                        </div>
+                    </div>
+
+                    <div class="loading-message" id="loadingMessage">
+                        <div class="loading-spinner">⏳</div>
+                        <div class="welcome-text">
+                            <h3>Analyzing Market Patterns...</h3>
+                            <p>Calculating optimal entry point with 100% accuracy</p>
+                        </div>
+                    </div>
+
+                    <div class="signal-result" id="signalResult">
+                        <h3 style="color: #00d4ff; margin-bottom: 10px; font-size: 1em;">TRADING SIGNAL</h3>
+                        <div class="signal-type" id="signalType">BUY</div>
+                        
+                        <div class="signal-grid">
+                            <div class="signal-item">
+                                <div class="signal-label">MARKET</div>
+                                <div class="signal-value" id="signalMarket">EUR/USD</div>
+                            </div>
+                            <div class="signal-item">
+                                <div class="signal-label">TIMEFRAME</div>
+                                <div class="signal-value" id="signalTimeframe">1M</div>
+                            </div>
+                            <div class="signal-item">
+                                <div class="signal-label">CONFIDENCE</div>
+                                <div class="signal-value">
+                                    <span id="signalConfidence" class="confidence">85%</span>
+                                </div>
+                            </div>
+                            <div class="signal-item">
+                                <div class="signal-label">STRATEGY</div>
+                                <div class="signal-value" id="signalStrategy">Support/Resistance</div>
+                            </div>
+                        </div>
+                        
+                        <div class="signal-time">
+                            <div class="signal-label">OPTIMAL ENTRY TIME</div>
+                            <div class="signal-value" id="signalTime">02:06 PM</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <footer>
-            <p>© 2024 BigMoney Trading Bot. All rights reserved.</p>
-            <p>Advanced Algorithmic Trading Solution</p>
-        </footer>
     </div>
 
     <script>
-        function startBot() {
-            alert('🚀 Bot Started! Trading session initiated.');
-            updateStatus('active');
+        const CORRECT_PASSWORD = "PassBigMoney";
+        let isGenerating = false;
+        let countdownTimer;
+        let lastGenerateTime = 0; // وقت آخر ضغط على الزر
+        
+        function checkPassword() {
+            const passwordInput = document.getElementById('passwordInput');
+            const errorMessage = document.getElementById('errorMessage');
+            const passwordScreen = document.getElementById('passwordScreen');
+            const mainSite = document.getElementById('mainSite');
+            
+            if (passwordInput.value === CORRECT_PASSWORD) {
+                passwordScreen.style.display = 'none';
+                mainSite.style.display = 'block';
+            } else {
+                errorMessage.style.display = 'block';
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
         }
         
-        function stopBot() {
-            alert('⏹️ Bot Stopped! Trading session paused.');
-            updateStatus('inactive');
+        function checkEnter(event) {
+            if (event.key === 'Enter') {
+                checkPassword();
+            }
         }
         
-        function optimizeStrategy() {
-            alert('⚡ Strategy optimization in progress...');
-            // محاكاة عملية التحسين
-            setTimeout(() => {
-                alert('✅ Strategy optimized successfully!');
-            }, 2000);
+        function generateSignal() {
+            if (isGenerating) return;
+            
+            const strategy = document.getElementById('strategy').value;
+            const system = document.getElementById('system').value;
+            const market = document.getElementById('market').value;
+            
+            if (!strategy || !system || !market) {
+                alert('⚠️ Please select Strategy, System, and Market!');
+                return;
+            }
+            
+            // تعطيل الزر
+            isGenerating = true;
+            const generateBtn = document.getElementById('generateBtn');
+            const timerDisplay = document.getElementById('timerDisplay');
+            
+            generateBtn.disabled = true;
+            generateBtn.textContent = '⏳ GENERATING SIGNAL...';
+            
+            // إظهار رسالة التحميل
+            document.getElementById('welcomeMessage').style.display = 'none';
+            document.getElementById('loadingMessage').style.display = 'flex';
+            document.getElementById('signalResult').style.display = 'none';
+            
+            const currentTime = Date.now();
+            const timeSinceLastGenerate = currentTime - lastGenerateTime;
+            
+            // إذا كان أول مرة أو مر أكثر من 60 ثانية منذ آخر ضغط
+            if (lastGenerateTime === 0 || timeSinceLastGenerate > 60000) {
+                // نتيجة فورية
+                setTimeout(() => {
+                    showOptimalSignal(strategy, system, market);
+                    generateBtn.disabled = false;
+                    generateBtn.textContent = '🎯 GENERATE SIGNAL';
+                    isGenerating = false;
+                    lastGenerateTime = currentTime;
+                }, 1500);
+            } else {
+                // إذا ضغط مرتين ورا بعض (خلال 60 ثانية) - ينتظر 60 ثانية
+                timerDisplay.style.display = 'block';
+                
+                // بدء العد التنازلي (60 ثانية)
+                let timeLeft = 60;
+                const timerElement = document.getElementById('timer');
+                
+                countdownTimer = setInterval(() => {
+                    timeLeft--;
+                    timerElement.textContent = timeLeft;
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(countdownTimer);
+                        showOptimalSignal(strategy, system, market);
+                        generateBtn.disabled = false;
+                        generateBtn.textContent = '🎯 GENERATE SIGNAL';
+                        timerDisplay.style.display = 'none';
+                        isGenerating = false;
+                        lastGenerateTime = Date.now();
+                    }
+                }, 1000);
+            }
         }
         
-        function showSettings() {
-            alert('⚙️ Opening settings panel...');
-        }
-        
-        function updateStatus(status) {
-            const buttons = document.querySelectorAll('.btn');
-            buttons.forEach(btn => {
-                if (status === 'active') {
-                    btn.style.opacity = '0.8';
-                } else {
-                    btn.style.opacity = '1';
-                }
+        function showOptimalSignal(strategy, system, market) {
+            const strategies = {
+                'support': 'Support/Resistance',
+                'trend': 'Trend Following', 
+                'breakout': 'Breakout',
+                'scalping': 'Scalping'
+            };
+            
+            // توليد إشارة عشوائية (60% BUY, 40% SELL)
+            const randomSignal = Math.random();
+            const signalType = randomSignal < 0.6 ? 'BUY' : 'SELL';
+            
+            // TIMEFRAME ثابت دائماً 1minute
+            const timeframe = '1M';
+            
+            // توليد نسبة ثقة عشوائية بين 75% و 95%
+            const confidence = Math.floor(Math.random() * 21) + 75; // 75-95%
+            const confidenceElement = document.getElementById('signalConfidence');
+            
+            // تحديث النتائج
+            document.getElementById('signalMarket').textContent = market;
+            document.getElementById('signalType').textContent = signalType;
+            document.getElementById('signalType').className = `signal-type ${signalType.toLowerCase()}`;
+            document.getElementById('signalTimeframe').textContent = timeframe;
+            confidenceElement.textContent = confidence + '%';
+            
+            // إضافة لون حسب مستوى الثقة
+            if (confidence >= 90) {
+                confidenceElement.className = 'confidence high';
+            } else if (confidence >= 80) {
+                confidenceElement.className = 'confidence medium';
+            } else {
+                confidenceElement.className = 'confidence low';
+            }
+            
+            document.getElementById('signalStrategy').textContent = strategies[strategy];
+            
+            // حساب أفضل وقت دخول (بعد 2-5 دقائق من الوقت الحالي)
+            const now = new Date();
+            const randomMinutes = Math.floor(Math.random() * 3) + 2; // 2-4 دقائق
+            const optimalEntry = new Date(now.getTime() + (randomMinutes * 60 * 1000));
+            
+            document.getElementById('signalTime').textContent = optimalEntry.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true 
             });
+            
+            // إخفاء رسالة التحميل وإظهار النتيجة
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('signalResult').style.display = 'flex';
         }
         
-        // محاكاة تحديث الإحصائيات
-        setInterval(() => {
-            const profitElement = document.querySelector('.profit');
-            const currentProfit = parseFloat(profitElement.textContent.replace('+$', '').replace(',', ''));
-            const randomChange = (Math.random() - 0.5) * 100;
-            const newProfit = currentProfit + randomChange;
-            profitElement.textContent = `+$${newProfit.toFixed(2)}`;
-        }, 5000);
+        document.getElementById('passwordInput').focus();
     </script>
 </body>
 </html>
